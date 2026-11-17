@@ -146,11 +146,11 @@ function visible(){const q=$("q").value.trim().toLowerCase(),fs=$("fs").value;
    .sort((a,b)=>(b.nomor||0)-(a.nomor||0))}
 function renderList(){
   const tb=$("tb");const vis=visible();tb.replaceChildren();
-  if(!vis.length){tb.append(h("tr",null,h("td",{colspan:9},h("div",{class:"empty"},h("b",null,rows.length?"Tidak ada yang cocok":"Belum ada belanja"),rows.length?"Ubah kata kunci atau filter status.":"Isi form di tab Input belanja, nanti muncul di sini."))))}
+  if(!vis.length){tb.append(h("tr",null,h("td",{colspan:10},h("div",{class:"empty"},h("b",null,rows.length?"Tidak ada yang cocok":"Belum ada belanja"),rows.length?"Ubah kata kunci atau filter status.":"Isi form di tab Input belanja, nanti muncul di sini."))))}
   for(const r of vis){const st=r.diajukan?"sudah":"belum";
     const ck=h("input",{type:"checkbox",class:"ck","aria-label":"Pilih",checked:selected.has(r.id),onchange:e=>{e.target.checked?selected.add(r.id):selected.delete(r.id);selInfo()}});
     tb.append(h("tr",null,h("td",null,ck),h("td",null,h("span",{class:"ttl"},cfg.prefix+"-"+String(r.nomor).padStart(3,"0"))),h("td",null,fmtShort(r.tanggal)),
-      h("td",null,h("div",{class:"ttl"},r.vendor),h("div",{class:"mut"},belanjaText(r))),h("td",{class:"num"},rp(r.harga)),h("td",null,r.via||""),
+      h("td",null,h("div",{class:"ttl"},r.vendor),h("div",{class:"mut"},belanjaText(r))),h("td",null,r.penerima||cfg.defPenerima||"-"),h("td",{class:"num"},rp(r.harga)),h("td",null,r.via||""),
       h("td",null,h("span",{class:"pill "+st},st==="sudah"?"Diajukan "+fmtShort(r.diajukan):"Belum diajukan")),
       h("td",null,h("label",{class:"cair"},h("input",{type:"checkbox",class:"ck","aria-label":"Sudah direimburse",checked:!!r.dibayar,onchange:e=>setDibayar(r,e.target.checked)}),r.dibayar?h("span",{class:"pill sudah"},"Cair "+fmtShort(r.dibayar)):h("span",{class:"mut"},r.diajukan?"Menunggu":"Belum diajukan"))),
       h("td",null,h("div",{class:"rowact"},h("button",{class:"btn sm",onclick:()=>openPreview([r])},"Lihat"),h("button",{class:"btn sm",onclick:()=>loadForm(r)},"Ubah"))))) }
@@ -166,7 +166,7 @@ $("b-aju").addEventListener("click",async()=>{
 $("b-csv").addEventListener("click",()=>{
   const list=(selected.size?picked():[...rows].sort((a,b)=>a.nomor-b.nomor));
   const q=s=>'"'+String(s==null?"":s).replace(/"/g,'""')+'"';
-  const lines=[["No","Tanggal","Belanja","Harga","Via","Diajukan","Direimburse"].join(",")].concat(list.map(r=>[r.nomor,fmtShort(r.tanggal),q(belanjaText(r)),r.harga||0,q(r.via),r.diajukan||"",r.dibayar||""].join(",")));
+  const lines=[["No","Tanggal","Belanja","Harga","Via","Diajukan","Direimburse","Penerima"].join(",")].concat(list.map(r=>[r.nomor,fmtShort(r.tanggal),q(belanjaText(r)),r.harga||0,q(r.via),r.diajukan||"",r.dibayar||"",q(r.penerima||cfg.defPenerima)].join(",")));
   saveBlob("log_reimburse.csv",new Blob(["\ufeff"+lines.join("\r\n")],{type:"text/csv"}));toast("File log reimburse siap.")});
 async function setDibayar(r,on){
   try{await api("dibayar",{id:r.id,tanggal:on?today():""});toast(on?"Ditandai sudah direimburse.":"Tanda reimburse dibatalkan.");load()}catch(e){handleErr(e);renderList()}}
