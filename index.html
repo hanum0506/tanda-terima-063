@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="id"><head><title>Tanda Terima Belanja</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap">
+<style>
+/* Layout: bilah atas + tab, konten satu kolom lebar 1080px; form di kiri, ringkasan di kanan pada layar lebar */
+:root{
+  --bg:#f5f6f8; --surface:#ffffff; --ink:#1b2430; --muted:#5d6877; --line:#dfe3ea;
+  --accent:#1d5fa6; --accent-ink:#ffffff; --accent-soft:#e6eef8;
+  --ok:#1f7a4d; --ok-soft:#e3f3ea; --warn:#9a5b00; --warn-soft:#fdf0d8; --bad:#b3261e; --bad-soft:#fbe7e5;
+  --f-body:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-head:"Space Grotesk","Inter",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12161c; --surface:#1a2029; --ink:#e8ecf2; --muted:#9aa6b6; --line:#2c3541;
+  --accent:#6aa7ee; --accent-ink:#0d1520; --accent-soft:#1d2c42;
+  --ok:#5cc593; --ok-soft:#173226; --warn:#f0b659; --warn-soft:#3a2d12; --bad:#ff8f86; --bad-soft:#3d1c1a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12161c; --surface:#1a2029; --ink:#e8ecf2; --muted:#9aa6b6; --line:#2c3541;
+  --accent:#6aa7ee; --accent-ink:#0d1520; --accent-soft:#1d2c42;
+  --ok:#5cc593; --ok-soft:#173226; --warn:#f0b659; --warn-soft:#3a2d12; --bad:#ff8f86; --bad-soft:#3d1c1a; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:14px/1.5 var(--f-body);padding-block:0 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1080px;margin:0 auto}
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;padding:22px 0 0}
+h1{font:600 22px/1.2 var(--f-head);margin:0;letter-spacing:-.01em}
+.sub{color:var(--muted);margin:2px 0 0;font-size:13px}
+nav.tabs{display:flex;gap:2px;margin-top:16px;border-bottom:1px solid var(--line);overflow-x:auto}
+nav.tabs button{appearance:none;background:none;border:0;border-bottom:2px solid transparent;padding:10px 14px;font:500 14px var(--f-body);color:var(--muted);cursor:pointer;white-space:nowrap;margin-bottom:-1px}
+nav.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+nav.tabs button:hover{color:var(--ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.notice{margin:16px 0 0;padding:10px 14px;border-radius:6px;background:var(--warn-soft);color:var(--warn);font-size:13px}
+.panel{margin-top:20px}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:24px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:20px}
+.card h2{font:600 15px var(--f-head);margin:0 0 14px}
+.row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media (max-width:560px){.row{grid-template-columns:minmax(0,1fr)}}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field.full{grid-column:1/-1}
+label,.lbl{font-size:12px;font-weight:500;color:var(--muted)}
+input,select,textarea{font:14px var(--f-body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px 10px;width:100%;min-width:0}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:-1px;border-color:var(--accent)}
+textarea{min-height:90px;resize:vertical}
+.hint{font-size:12px;color:var(--muted)}
+.items{display:flex;flex-direction:column;gap:8px}
+.item{display:grid;grid-template-columns:minmax(0,1fr) 84px 110px 32px;gap:8px;align-items:center}
+@media (max-width:560px){.item{grid-template-columns:minmax(0,1fr) 70px 90px 32px}}
+.btn{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:6px;padding:8px 14px;font:500 13px var(--f-body);cursor:pointer}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.08);color:var(--accent-ink)}
+.btn.danger:hover{border-color:var(--bad);color:var(--bad)}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.btn.sm{padding:4px 10px;font-size:12px}
+.btn.x{padding:4px 0;width:32px;height:32px}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;align-items:center}
+.nomor{font:600 28px var(--f-head);letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.side .stat{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
+.side .stat:last-child{border-bottom:0}
+.side .stat b{font-variant-numeric:tabular-nums}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+.toolbar .grow{flex:1 1 180px;min-width:0}
+.toolbar select{width:auto}
+.tablebox{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:760px}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top;font-size:13px}
+th{font-size:12px;color:var(--muted);font-weight:500;background:var(--bg);position:sticky;top:0}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+td .ttl{font-weight:500}
+td .mut{color:var(--muted);font-size:12px}
+.pill{display:inline-block;padding:2px 8px;border-radius:99px;font-size:12px;font-weight:500;white-space:nowrap}
+.pill.belum{background:var(--warn-soft);color:var(--warn)}
+.pill.sudah{background:var(--ok-soft);color:var(--ok)}
+.rowact{display:flex;gap:6px;flex-wrap:nowrap}
+.cair{display:flex;align-items:center;gap:8px;white-space:nowrap;cursor:pointer}
+.empty{padding:36px 16px;text-align:center;color:var(--muted)}
+.empty b{display:block;color:var(--ink);margin-bottom:4px;font-family:var(--f-head);font-size:15px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:6px;font-size:13px;z-index:50;max-width:90vw}
+.toast.err{background:var(--bad);color:#fff}
+.modal{position:fixed;inset:0;background:rgba(10,14,20,.6);z-index:40;display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:24px max(12px,env(safe-area-inset-left,0px))}
+.mbox{background:var(--surface);border-radius:10px;width:100%;max-width:760px;padding:16px 16px 20px}
+.mbar{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center;margin-bottom:12px}
+.mbar .hint{flex:1 1 220px}
+.sheetwrap{overflow-x:auto;background:#8a93a0;padding:14px;border-radius:6px}
+.sheet{background:#fff;color:#000;font:12px/1.4 Arial,Helvetica,sans-serif;width:640px;margin:0 auto;padding:36px 48px 40px;box-shadow:0 1px 8px rgba(0,0,0,.35)}
+.sheet .kop{display:flex;gap:10px;align-items:center;border-bottom:2px solid #000;padding-bottom:6px;margin-bottom:14px}
+.sheet .kop img{width:62px;height:auto}
+.sheet .kop div{flex:1;text-align:center}
+.sheet .k1{font-weight:700;font-size:14px}.sheet .k2{font-weight:700;font-size:11px}.sheet .k3{font-size:7px}
+.sheet h3{margin:0;text-align:center;font-size:12px}.sheet .no{text-align:center;margin-bottom:10px}
+.sheet p{text-align:justify;margin:0 0 8px}.sheet p.in{text-indent:28px}
+.sheet table{min-width:0;margin:6px 0 10px}
+.sheet th,.sheet td{border:1px solid #000;padding:2px 5px;font-size:11px;text-align:center;background:#fff;color:#000;position:static;font-weight:400;height:18px}
+.sheet td.l{text-align:left}
+.sheet .sig{display:grid;grid-template-columns:1fr 1fr;margin-top:12px}
+.sheet .sig div{min-height:78px}
+.set-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+@media (max-width:760px){.set-grid{grid-template-columns:minmax(0,1fr)}}
+.ck{width:auto}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media print{@page{size:A4;margin:12mm}body{background:#fff;padding:0}.wrap,.mbar,.toast,#gate{display:none!important}.modal{position:static;background:none;padding:0;display:block}.mbox{padding:0;max-width:none}.sheetwrap{background:none;padding:0;overflow:visible}.sheet{box-shadow:none;width:auto;max-width:none;margin:0;padding:0 8mm}}
+</style>
+</head><body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Tanda Terima Belanja</h1>
+      <p class="sub">Catat belanja sekali, nomor surat dan Tanda Terima langsung jadi.</p>
+    </div>
+  </header>
+  <div id="notice" class="notice" hidden></div>
+  <nav class="tabs" role="tablist" aria-label="Menu">
+    <button role="tab" id="tab-input" aria-selected="true" data-tab="input">Input belanja</button>
+    <button role="tab" id="tab-daftar" aria-selected="false" data-tab="daftar">Daftar &amp; cetak</button>
+    <button role="tab" id="tab-set" aria-selected="false" data-tab="set">Pengaturan</button>
+  </nav>
+
+  <section id="p-input" class="panel" role="tabpanel" aria-labelledby="tab-input">
+    <div class="grid">
+      <form id="f" class="card" autocomplete="off">
+        <h2 id="f-title">Belanja baru</h2>
+        <div class="row">
+          <div class="field"><label for="f-tgl">Tanggal beli</label><input type="date" id="f-tgl" required></div>
+          <div class="field"><label for="f-tglt">Tanggal terima <span class="hint">(kosong = sama dengan tanggal beli)</span></label><input type="date" id="f-tglt"></div>
+          <div class="field"><label for="f-vendor">Vendor / toko</label><input id="f-vendor" list="dl-vendor" placeholder="mis. Shopee/Toko ATK Setiabudi" required></div>
+          <div class="field"><label for="f-inv">No. invoice</label><input id="f-inv" placeholder="mis. ATK-0042"></div>
+          <div class="field full"><label for="f-kep">Keperluan / nama acara</label><input id="f-kep" list="dl-kep" placeholder="mis. Belanja barang pemeliharaan komputer" required></div>
+        </div>
+        <div style="margin-top:18px">
+          <div class="lbl" style="margin-bottom:6px">Barang (maksimal 5)</div>
+          <div class="items" id="items"></div>
+          <div class="actions" style="margin-top:10px"><button type="button" class="btn sm" id="add-item">+ Tambah barang</button></div>
+        </div>
+        <div class="row" style="margin-top:18px">
+          <div class="field"><label for="f-harga">Harga total (Rp)</label><input id="f-harga" inputmode="numeric" placeholder="0"></div>
+          <div class="field"><label for="f-via">Dibayar via</label><select id="f-via"></select></div>
+          <div class="field"><label for="f-kirim">Nama pengirim</label><input id="f-kirim" placeholder="mis. Ahmad (Driver)"></div>
+          <div class="field"><label for="f-terima">Penerima</label><select id="f-terima"></select></div>
+          <div class="field full"><label for="f-cat">Catatan <span class="hint">(tidak ikut tercetak)</span></label><input id="f-cat"></div>
+        </div>
+        <div class="actions">
+          <button type="submit" class="btn primary" id="f-save">Simpan &amp; lihat Tanda Terima</button>
+          <button type="button" class="btn" id="f-reset">Kosongkan form</button>
+          <button type="button" class="btn danger" id="f-del" hidden>Hapus belanja ini</button>
+        </div>
+        <datalist id="dl-vendor"></datalist><datalist id="dl-kep"></datalist><datalist id="dl-sat"></datalist>
+      </form>
+      <aside class="card side" aria-label="Ringkasan">
+        <div class="lbl">Nomor berikutnya</div>
+        <div class="nomor" id="next-no">-</div>
+        <div class="hint" id="next-full" style="margin-bottom:12px"></div>
+        <div class="stat"><span>Belum diajukan</span><b id="s-belum">0</b></div>
+        <div class="stat"><span>Total belum diajukan</span><b id="s-belum-rp">Rp 0</b></div>
+        <div class="stat"><span>Sudah diajukan</span><b id="s-sudah">0</b></div>
+        <div class="stat"><span>Menunggu reimburse</span><b id="s-tunggu">0</b></div>
+        <div class="stat"><span>Total menunggu reimburse</span><b id="s-tunggu-rp">Rp 0</b></div>
+        <p class="hint" style="margin:12px 0 0">Nomor diambil otomatis saat disimpan, jadi dua orang yang input bersamaan tidak akan kembar.</p>
+      </aside>
+    </div>
+  </section>
+
+  <section id="p-daftar" class="panel" role="tabpanel" aria-labelledby="tab-daftar" hidden>
+    <div class="toolbar">
+      <input class="grow" id="q" type="search" placeholder="Cari vendor, barang, atau nomor" aria-label="Cari">
+      <select id="fs" aria-label="Status"><option value="">Semua status</option><option value="belum">Belum diajukan</option><option value="sudah">Sudah diajukan</option><option value="tunggu">Diajukan, belum direimburse</option><option value="cair">Sudah direimburse</option></select>
+    </div>
+    <div class="toolbar">
+      <button class="btn primary" id="b-dl" disabled>Unduh Tanda Terima (.docx)</button>
+      <button class="btn" id="b-aju" disabled>Tandai sudah diajukan</button>
+      <button class="btn" id="b-csv">Unduh log reimburse (.csv)</button>
+      <span class="hint" id="sel-info"></span>
+    </div>
+    <div class="tablebox"><table>
+      <thead><tr><th style="width:34px"><input type="checkbox" class="ck" id="ck-all" aria-label="Pilih semua"></th><th>Nomor</th><th>Tanggal</th><th>Vendor &amp; barang</th><th class="num">Harga</th><th>Via</th><th>Status</th><th>Reimburse</th><th></th></tr></thead>
+      <tbody id="tb"></tbody>
+    </table></div>
+  </section>
+
+  <section id="p-set" class="panel" role="tabpanel" aria-labelledby="tab-set" hidden>
+    <div class="card">
+      <h2>Pengaturan</h2>
+      <p class="hint" id="set-note" style="margin-top:-6px"></p>
+      <div class="field" style="max-width:320px;margin-bottom:14px"><label for="s-admin">Kode admin <span class="hint">(diperlukan untuk menyimpan pengaturan, mengatur nomor, dan menghapus)</span></label><input id="s-admin" type="password" autocomplete="off"></div>
+      <div class="set-grid">
+        <div class="field"><label for="s-kode">Kode unit di nomor surat</label><input id="s-kode"></div>
+        <div class="field"><label for="s-prefix">Awalan nomor</label><input id="s-prefix"></div>
+        <div class="field"><label for="s-kond">Catatan kondisi barang (default)</label><input id="s-kond"></div>
+        <div class="field"><label for="s-def">Penerima default</label><select id="s-def"></select></div>
+        <div class="field"><label for="s-pen">Daftar penerima <span class="hint">(satu baris: Nama | NIP)</span></label><textarea id="s-pen"></textarea></div>
+        <div class="field"><label for="s-kep">Daftar keperluan / nama acara <span class="hint">(satu baris satu)</span></label><textarea id="s-kep"></textarea></div>
+        <div class="field"><label for="s-sat">Daftar satuan</label><textarea id="s-sat"></textarea></div>
+        <div class="field"><label for="s-via">Daftar cara bayar</label><textarea id="s-via"></textarea></div>
+      </div>
+      <div class="actions"><button class="btn primary" id="s-save">Simpan pengaturan</button></div>
+      <hr style="border:0;border-top:1px solid var(--line);margin:20px 0">
+      <div class="row">
+        <div class="field"><label for="s-last">Nomor terakhir yang sudah terpakai</label><input id="s-last" inputmode="numeric"><span class="hint" id="s-last-hint"></span></div>
+        <div class="field" style="justify-content:flex-end"><button class="btn" id="s-last-save" style="align-self:flex-start">Atur nomor terakhir</button></div>
+      </div>
+    </div>
+  </section>
+</div>
+<div id="modal" class="modal" hidden></div>
+<div id="gate" class="modal" hidden style="z-index:60"></div>
+<div id="toast" class="toast" hidden></div>
+<script src="config.js"></script>
+<script>
+/* Pembuat file .docx Tanda Terima tanpa library. Pure JS. */
+const TTD = (() => {
+  const enc = new TextEncoder();
+  const esc = s => String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  const F = '<w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>';
+  const run = (t, o = {}) => `<w:r><w:rPr>${F}${o.b?"<w:b/>":""}<w:sz w:val="${o.sz||22}"/><w:szCs w:val="${o.sz||22}"/></w:rPr><w:t xml:space="preserve">${esc(t)}</w:t></w:r>`;
+  const para = (runs, o = {}) => `<w:p><w:pPr>${o.keep?"<w:keepNext/>":""}<w:spacing w:before="${o.before||0}" w:after="${o.after==null?0:o.after}" w:line="${o.line||240}" w:lineRule="auto"/>${o.first?`<w:ind w:firstLine="${o.first}"/>`:""}<w:jc w:val="${o.jc||"left"}"/></w:pPr>${runs}</w:p>`;
+  const bdr = (v) => ["top","left","bottom","right"].map(k=>`<w:${k} w:val="${v}" w:sz="4" w:space="0" w:color="000000"/>`).join("");
+  const cell = (w, inner, o = {}) => `<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/><w:tcBorders>${o.noBorder?bdr("nil"):bdr("single")}</w:tcBorders><w:vAlign w:val="${o.va||"center"}"/><w:tcMar><w:left w:w="70" w:type="dxa"/><w:right w:w="70" w:type="dxa"/></w:tcMar></w:tcPr>${inner}</w:tc>`;
+  const IMG_W = 829340, IMG_H = 791209;
+  const logo = id => `<w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="${IMG_W}" cy="${IMG_H}"/><wp:docPr id="${id}" name="Logo ${id}"/><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="0" name="logo.png"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="rId1"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${IMG_W}" cy="${IMG_H}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>`;
+
+  const KOP = [
+    ["KEMENTERIAN KEUANGAN REPUBLIK INDONESIA", 26],
+    ["DIREKTORAT JENDERAL PAJAK", 22],
+    ["KANTOR WILAYAH DIREKTORAT JENDERAL PAJAK JAKARTA SELATAN I", 22],
+    ["KANTOR PELAYANAN PAJAK PRATAMA JAKARTA SETIABUDI TIGA", 22],
+  ];
+  const ALAMAT = [
+    "JL. RAYA PASAR MINGGU NO.11 PANCORAN, JAKARTA SELATAN 12780",
+    "TELEPON (021) 7992961, 7993028, 7946091; FAKSIMILE (021) 7994253; LAMAN www.pajak.go.id",
+    "LAYANAN INFORMASI DAN PENGADUAN KRING PAJAK (021) 1500200",
+    "SUREL pengaduan@pajak.go.id; informasi@pajak.go.id",
+  ];
+  const kop = id => {
+    const right = KOP.map(([t,s]) => para(run(t,{b:1,sz:s}),{jc:"center"})).join("")
+      + ALAMAT.map(t => para(run(t,{sz:14}),{jc:"center"})).join("");
+    return `<w:tbl><w:tblPr><w:tblW w:w="9640" w:type="dxa"/><w:tblInd w:w="-284" w:type="dxa"/><w:tblBorders><w:bottom w:val="single" w:sz="12" w:space="0" w:color="000000"/></w:tblBorders><w:tblLayout w:type="fixed"/></w:tblPr><w:tblGrid><w:gridCol w:w="1433"/><w:gridCol w:w="8207"/></w:tblGrid><w:tr><w:tc><w:tcPr><w:tcW w:w="1433" w:type="dxa"/><w:vAlign w:val="center"/></w:tcPr>${para(logo(id))}</w:tc><w:tc><w:tcPr><w:tcW w:w="8207" w:type="dxa"/></w:tcPr>${right}</w:tc></w:tr></w:tbl>`;
+  };
+
+  const COLS = [560, 3300, 1000, 1000, 1800, 1503];
+  function body(t, idx) {
+    const head = ["No","Deskripsi Barang","Volume","Satuan","Catatan (kondisi)","Keterangan"];
+    let rows = `<w:tr><w:trPr><w:cantSplit/></w:trPr>${head.map((h,i)=>cell(COLS[i],para(run(h),{jc:"center"}))).join("")}</w:tr>`;
+    const n = Math.max(4, t.items.length);
+    for (let i = 0; i < n; i++) {
+      const it = t.items[i];
+      const v = [it ? (i+1)+"." : (i+1)+".", it ? it.nama : "", it ? it.vol : "", it ? it.sat : "", it ? t.kondisi : "", ""];
+      rows += `<w:tr><w:trPr><w:cantSplit/></w:trPr>${v.map((x,k)=>cell(COLS[k],para(run(x),{jc:k===1?"left":"center"}))).join("")}</w:tr>`;
+    }
+    const tbl = `<w:tbl><w:tblPr><w:tblW w:w="9163" w:type="dxa"/><w:tblLayout w:type="fixed"/></w:tblPr><w:tblGrid>${COLS.map(c=>`<w:gridCol w:w="${c}"/>`).join("")}</w:tblGrid>${rows}</w:tbl>`;
+    const sigW = [4581, 4582];
+    const sp = () => para("");
+    const sig = `<w:tbl><w:tblPr><w:tblW w:w="9163" w:type="dxa"/><w:tblLayout w:type="fixed"/></w:tblPr><w:tblGrid><w:gridCol w:w="4581"/><w:gridCol w:w="4582"/></w:tblGrid><w:tr><w:trPr><w:cantSplit/></w:trPr>`
+      + cell(sigW[0], para(run("Pengirim,"),{keep:1}) + sp()+sp()+sp()+sp() + para(run(t.pengirim)), {noBorder:1, va:"top"})
+      + cell(sigW[1], para(run("Penerima,"),{keep:1}) + sp()+sp()+sp()+sp() + para(run(t.penerima.nama)) + (t.penerima.nip?para(run("NIP "+t.penerima.nip)):""), {noBorder:1, va:"top"})
+      + `</w:tr></w:tbl>`;
+    const J = {jc:"both", first:720, after:160, line:276};
+    return (idx>0 ? `<w:p><w:r><w:br w:type="page"/></w:r></w:p>` : "")
+      + kop(idx+1)
+      + para("",{after:120}) + para(run("TANDA TERIMA BARANG",{b:1}),{jc:"center"})
+      + para(run("Nomor : "+t.nomor),{jc:"center",after:200})
+      + para(run(`Pada hari ini ${t.hari}, ${t.tanggal}, telah diterima barang dari ${t.vendor} untuk keperluan pelaksanaan kegiatan ${t.keperluan} pada KPP Pratama Jakarta Setiabudi Tiga dengan rincian sebagaimana berikut:`),J)
+      + tbl + para("",{after:160})
+      + para(run("Seluruh item tersebut di atas telah diperiksa dan diterima dalam jumlah yang sesuai serta dalam keadaan baik dan layak."),J)
+      + para(run("Demikian Tanda Terima ini dibuat sebagai bukti serah terima yang sah untuk dipergunakan sebagaimana mestinya."),J)
+      + para("",{after:120}) + sig;
+  }
+
+  // ---- zip (stored) ----
+  const T = (() => { const t = new Uint32Array(256); for (let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0;}return t; })();
+  const crc = b => { let c = 0xFFFFFFFF; for (let i=0;i<b.length;i++) c = T[(c^b[i])&255]^(c>>>8); return (c^0xFFFFFFFF)>>>0; };
+  function zip(files) {
+    const parts = [], cen = []; let off = 0;
+    for (const [name, data] of files) {
+      const nm = enc.encode(name), c = crc(data);
+      const lh = new DataView(new ArrayBuffer(30));
+      lh.setUint32(0,0x04034b50,true); lh.setUint16(4,20,true); lh.setUint16(6,0x0800,true); lh.setUint16(8,0,true);
+      lh.setUint16(10,0,true); lh.setUint16(12,0x21,true); lh.setUint32(14,c,true); lh.setUint32(18,data.length,true); lh.setUint32(22,data.length,true);
+      lh.setUint16(26,nm.length,true); lh.setUint16(28,0,true);
+      parts.push(new Uint8Array(lh.buffer), nm, data);
+      const ch = new DataView(new ArrayBuffer(46));
+      ch.setUint32(0,0x02014b50,true); ch.setUint16(4,20,true); ch.setUint16(6,20,true); ch.setUint16(8,0x0800,true); ch.setUint16(10,0,true);
+      ch.setUint16(12,0,true); ch.setUint16(14,0x21,true); ch.setUint32(16,c,true); ch.setUint32(20,data.length,true); ch.setUint32(24,data.length,true);
+      ch.setUint16(28,nm.length,true); ch.setUint32(42,off,true);
+      cen.push(new Uint8Array(ch.buffer), nm);
+      off += 30 + nm.length + data.length;
+    }
+    const csz = cen.reduce((a,b)=>a+b.length,0);
+    const e = new DataView(new ArrayBuffer(22));
+    e.setUint32(0,0x06054b50,true); e.setUint16(8,files.length,true); e.setUint16(10,files.length,true); e.setUint32(12,csz,true); e.setUint32(16,off,true);
+    return new Blob([...parts, ...cen, new Uint8Array(e.buffer)], {type:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"});
+  }
+
+  function build(list, logoBytes) {
+    const NS = 'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"';
+    const doc = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document ${NS}><w:body>${list.map(body).join("")}<w:sectPr><w:pgSz w:w="11907" w:h="16840"/><w:pgMar w:top="851" w:right="1043" w:bottom="709" w:left="1701" w:header="720" w:footer="720" w:gutter="0"/></w:sectPr></w:body></w:document>`;
+    const files = [
+      ["[Content_Types].xml", enc.encode('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="png" ContentType="image/png"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>')],
+      ["_rels/.rels", enc.encode('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>')],
+      ["word/document.xml", enc.encode(doc)],
+      ["word/_rels/document.xml.rels", enc.encode('<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/image1.png"/></Relationships>')],
+      ["word/media/image1.png", logoBytes],
+    ];
+    return zip(files);
+  }
+  return { build };
+})();
+
+
+</script>
+<script src="app.js"></script>
+</body></html>
